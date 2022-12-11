@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% block body %}
+{% load static %}
+<div class="row container-fluid min-vh-100">
+    <input type="hidden" value="{{ request.user.username }}" id="user">
+    <div class="col-md-6 p-5">
+        <div class="d-flex flex-column align-items-center mt-5">
+            <div class="mt-5 text-center"><h3>Hi, {{ request.user.username|upper }}</h3></div>
+            <div class="mt-2 text-center"><h3>Welcome To Instant Chat</h3></div>     
+            <div class="mt-5 text-center "><p><b>Enjoy unlimited chat with instant chat</b></p></div>
+            <div class="mt-5 text-center"><h3 style="opacity: 0.2;">Developed By</h3></div>
+            <div class="mt-2 mb-5 text-center"><h3 style="opacity: 0.2;">Anshid</h3></div>
+            <div class="px-5 mt-5 text-center">
+                <a href="{% url 'logout' %}" class="btn btn-warning w-100 ">Logout</a>
+            </div>
+        </div>   
+    </div>
+    <div class="col-md-6 bg-warning">
+        <div class="d-flex flex-column align-items-center mt-5">
+            <div class="mt-5 text-dark text-center"><h3>Create Random Room</h3></div>
+            <div class="mt-2 text-dark text-center "><p><b>Copy and share your room code to invite your friends into the room</b></p></div>
+            <div class="px-5 mt-2 text-center">
+                <a href="javascript:void(0);" class="btn btn-dark w-100 generate">Genrate room code</a>
+            </div>     
+            <div style="display:none;" class="mt-2 text-dark text-center room"></div>
+            <div style="display:none;" class="px-5 mt-2 text-center enter">
+                <a href="javascript:void(0);" class="btn btn-dark w-100 enter-but">Enter room</a>
+            </div>
+        </div>
+        <div class="d-flex flex-column mt-5 align-items-center">
+            <div class="mt-5 text-dark text-center"><h3>Join To Room</h3></div>
+            <div class="mt-2 text-dark text-center"><input type="text" class="form-control code" placeholder="Enter Room Code"></div>
+            <div class="px-5 mt-2 text-center">
+                <a href="javascript:void(0);" class="btn btn-dark w-100 join">Join room</a>
+            </div>     
+            <div style="display:none;" class="mt-2 text-danger text-center error"><b>Invalid room</b></div>
+        </div>
+    </div>    
+</div>
+{% endblock %}
+{% block script %}
+<script>
+    function getRndInteger(min, max) {
+        return Math.floor(Math.random() * (max - min) ) + min;
+      }
+    $(document).on("click",".generate",function(){
+       var user = $("#user").val()
+       var code = getRndInteger(1000,9999)
+       var room =  `${code}${user}`
+       var link = `/chat/${room}`
+       $(".room").attr("style","display:block;")
+       $(".room").html(`<p>Your room code is <b>${room}</b></p>`)
+       $(".enter").attr("style","display:block;")
+       $(".enter-but").attr("href",link)
+    })
+
+    $(document).on("click",".join",function(){
+        var code = $(".code").val()
+        if(code.length < 6){
+            $(".error").attr("style","display:block;")
+            setTimeout(function(){
+                $(".error").attr("style","display:none;")
+            },2000)
+        }else{
+            window.location.href = `/chat/${code}`
+        }
+    })
+</script>
+{% endblock %}
